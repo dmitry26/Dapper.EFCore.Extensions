@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Test.Models
 {
@@ -13,10 +12,8 @@ namespace Test.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(@"Server=(local)\sqlexpress;Database=Blogging;Trusted_Connection=True;");
-            }
+            if (!optionsBuilder.IsConfigured)            
+				throw new InvalidOperationException("Database context is not configured");            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

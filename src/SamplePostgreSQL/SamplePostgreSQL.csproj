@@ -3,20 +3,27 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>Sample</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Sql\**" />
-    <EmbeddedResource Remove="Sql\**" />
-    <None Remove="Sql\**" />
+    <Compile Include="..\Sample\Extensions\HostBuilderExts.cs" Link="Extensions\HostBuilderExts.cs" />
+    <Compile Include="..\Sample\Models\Blog.cs" Link="Models\Blog.cs" />
+    <Compile Include="..\Sample\Models\BloggingContext.cs" Link="Models\BloggingContext.cs" />
+    <Compile Include="..\Sample\Models\BlogPost.cs" Link="Models\BlogPost.cs" />
+    <Compile Include="..\Sample\Models\BlogSetting.cs" Link="Models\BlogSetting.cs" />
+    <Compile Include="..\Sample\Models\CustomBloggingContext.cs" Link="Models\CustomBloggingContext.cs" />
+    <Compile Include="..\Sample\Models\Gender.cs" Link="Models\Gender.cs" />
+    <Compile Include="..\Sample\Models\User.cs" Link="Models\User.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
+    <PackageReference Include="Dapper" Version="1.50.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.2" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Serilog.Filters.Expressions" Version="1.1.0" />
@@ -29,9 +36,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

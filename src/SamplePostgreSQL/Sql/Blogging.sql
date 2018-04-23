@@ -1,0 +1,131 @@
+DROP INDEX "IX_FK_Blog_User"
+GO
+
+DROP INDEX "IX_FK_BlogPost_Blog"
+GO
+
+ALTER TABLE "BlogPost"
+	DROP CONSTRAINT "FK_BlogPost_Blog" CASCADE 
+GO
+
+ALTER TABLE "BlogSettings"
+	DROP CONSTRAINT "FK_BlogSettings_Blog" CASCADE 
+GO
+
+ALTER TABLE "Blog"
+	DROP CONSTRAINT "FK_Blog_User" CASCADE 
+GO
+
+DROP TABLE IF EXISTS "Blog"
+GO
+
+DROP TABLE IF EXISTS "BlogPost"
+GO
+
+DROP TABLE IF EXISTS "BlogSettings"
+GO
+
+DROP TABLE IF EXISTS "User"
+GO
+
+DROP SEQUENCE IF EXISTS "blog_seq"
+GO
+
+DROP SEQUENCE IF EXISTS "blogpost_seq"
+GO
+
+DROP SEQUENCE IF EXISTS "user_seq";
+GO
+
+CREATE SEQUENCE "blog_seq"
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 9223372036854775807
+MINVALUE -9223372036854775808
+NO CYCLE;
+Go
+
+CREATE SEQUENCE "blogpost_seq"
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 9223372036854775807
+MINVALUE -9223372036854775808
+NO CYCLE;
+GO
+
+CREATE SEQUENCE "user_seq"
+INCREMENT BY 1
+START WITH 1
+MAXVALUE 9223372036854775807
+MINVALUE -9223372036854775808
+NO CYCLE;
+GO
+
+CREATE TABLE "Blog"  ( 
+	"Id"         	int NOT NULL DEFAULT nextval('blog_seq'),
+	"UserId"     	int NOT NULL,
+	"Name"       	varchar(50) NOT NULL,
+	"DateCreate" 	timestamp NOT NULL,
+	"Description"	varchar(200) NOT NULL,
+	PRIMARY KEY("Id")
+)
+GO
+
+CREATE TABLE "BlogPost"  ( 
+	"Id"             	int NOT NULL DEFAULT nextval('blogpost_seq'),
+	"BlogId"         	int NOT NULL,
+	"Body"           	varchar(8001) NOT NULL,
+	"DatePublication"	timestamp NOT NULL,
+	PRIMARY KEY("Id")
+)
+GO
+
+CREATE TABLE "BlogSettings"  ( 
+	"BlogId"  	int NOT NULL,
+	"AutoSave"	boolean NOT NULL,
+	"AutoPost"	boolean NOT NULL,
+	PRIMARY KEY("BlogId")
+)
+GO
+
+CREATE TABLE "User"  ( 
+	"Id"        	int NOT NULL DEFAULT nextval('user_seq'),
+	"Name"      	varchar(50) NOT NULL,
+	"DateCreate"	timestamp NOT NULL,
+	"Gender"    	int NOT NULL,
+	PRIMARY KEY("Id")
+)
+GO
+
+ALTER TABLE "BlogPost"
+	ADD CONSTRAINT "FK_BlogPost_Blog"
+	FOREIGN KEY("BlogId")
+	REFERENCES "Blog"("Id")
+	ON DELETE NO ACTION 
+	ON UPDATE NO ACTION 
+GO
+
+ALTER TABLE "BlogSettings"
+	ADD CONSTRAINT "FK_BlogSettings_Blog"
+	FOREIGN KEY("BlogId")
+	REFERENCES "Blog"("Id")
+	ON DELETE NO ACTION 
+	ON UPDATE NO ACTION 
+GO
+
+ALTER TABLE "Blog"
+	ADD CONSTRAINT "FK_Blog_User"
+	FOREIGN KEY("UserId")
+	REFERENCES "User"("Id")
+	ON DELETE NO ACTION 
+	ON UPDATE NO ACTION 
+GO
+
+CREATE INDEX "IX_FK_Blog_User"
+	ON "Blog"("UserId")
+GO
+
+CREATE INDEX "IX_FK_BlogPost_Blog"
+	ON "BlogPost"("BlogId")
+GO
+
