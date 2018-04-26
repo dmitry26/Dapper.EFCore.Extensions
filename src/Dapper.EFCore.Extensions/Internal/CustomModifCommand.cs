@@ -11,21 +11,24 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace Dapper.Internal
 {
 	internal class CustomModifCommand : ModificationCommand
 	{
-		public CustomModifCommand(string name,string schema,IUpdateEntry entry,object values,EntityState state)
-			: base(name,schema,new ParameterNameGenerator().GenerateNext,false,null)
+		public CustomModifCommand(string name,string schema,IUpdateEntry entry,object values,EntityState state,Func<string> paramNameGen = null,bool writeOnly = false)
+			: base(name,schema,() => null,false,null)
 		{
 			_entry = entry;
 			_values = values;
-			_state = state;			
+			_state = state;
+			_paramNameGen = paramNameGen ?? new ParameterNameGenerator().GenerateNext;
+			_writeOnly = writeOnly;
 		}
 
 		private object _values;
+		private Func<string> _paramNameGen;
+		private bool _writeOnly;
 
 		private IReadOnlyList<ColumnModification> _columnModifications;
 
@@ -56,10 +59,10 @@ namespace Dapper.Internal
 				var isConcurrencyToken = property.IsConcurrencyToken;
 				var isCondition = !adding && (isKey || isConcurrencyToken);
 				var readValue = _entry.IsStoreGenerated(property);
-				var writeValue = false;				
+				var writeValue = false;
 				object value = null;
 
-				var srcProp = srcType?.GetProperty(property.Name);				
+				var srcProp = srcType?.GetProperty(property.Name);
 
 				if (!readValue)
 				{
@@ -74,7 +77,7 @@ namespace Dapper.Internal
 
 					if (adding && property.BeforeSaveBehavior == PropertySaveBehavior.Save ||
 						property.AfterSaveBehavior == PropertySaveBehavior.Save && modified)
-						writeValue = true;					
+						writeValue = true;
 				}
 
 				if (readValue || writeValue	|| isCondition)
@@ -83,8 +86,8 @@ namespace Dapper.Internal
 						_entry,
 						property,
 						propertyAnnotations,
-						() => GenerateParameterName(property.Name,isCondition && isConcurrencyToken),
-						readValue,
+						() => GenerateParameterName(isCondition && isConcurrencyToken),
+						readValue && !_writeOnly,
 						writeValue,
 						isKey,
 						isCondition,
@@ -97,9 +100,10 @@ namespace Dapper.Internal
 			return columnModifications;
 		}
 
-		private string GenerateParameterName(string name,bool origParam)
+		private string GenerateParameterName(bool origParam)
 		{
-			return origParam ? "org_" + name : name;
+			var name = _paramNameGen();
+			return (origParam ? "o_" + name : name);
 		}
-	}	
+	}
 }

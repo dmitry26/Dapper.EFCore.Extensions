@@ -39,41 +39,4 @@ namespace Dapper.Internal
 			return dict.Count > 0 ? dict : null;
 		}
 	}
-
-}
-
-namespace Dapper
-{
-	using Dapper.Internal;
-
-	public static partial class DapperEFCoreExts
-	{
-		/// <summary>
-		/// Set column type mapping for Dapper.
-		/// </summary>
-		/// <typeparam name="TEntity">The type of entity to override mapping.</typeparam>
-		/// <param name="dbCtx">The <see cref="DbContext"/>.</param>
-		public static void SetDapperMapping<TEntity>(this DbContext dbCtx)
-		{
-			dbCtx.SetDapperMapping(typeof(TEntity));
-		}
-
-		/// <summary>
-		/// Set column type mapping for Dapper.
-		/// </summary>
-		/// <param name="dbContext">The <see cref="DbContext"/>.</param>
-		/// <param name="type">Entity type to override mapping</param>
-		public static void SetDapperMapping(this DbContext dbCtx,Type type)
-		{
-			if (dbCtx == null) throw new ArgumentNullException(nameof(dbCtx));
-
-			if (type == null) throw new ArgumentNullException(nameof(type));
-
-			lock (typeof(ColumnTypeMapper))
-			{
-				if (!(SqlMapper.GetTypeMap(type) is ColumnTypeMapper))
-					SqlMapper.SetTypeMap(type,new ColumnTypeMapper(dbCtx,type));
-			}
-		}
-	}
 }

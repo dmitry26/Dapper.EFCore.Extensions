@@ -28,10 +28,10 @@ namespace Dapper.Internal
 		// Based on the article: https://weblogs.asp.net/dixin/entity-framework-core-and-linq-to-entities-5-query-translation-implementation
 		public static (SelectExpression, IReadOnlyDictionary<string,object>) Compile(
 			this DbContext dbContext,Expression linqExp,bool extractParams = true)
-		{			
+		{
 			if (linqExp == null)
 				throw new ArgumentNullException(nameof(linqExp));
-			
+
 			var evalExpFilter = (dbContext ?? throw new ArgumentNullException(nameof(dbContext)))
 				.GetService<IEvaluatableExpressionFilter>();
 
@@ -70,12 +70,12 @@ namespace Dapper.Internal
 				.GetMethod(nameof(RelationalQueryModelVisitor.CreateQueryExecutor))
 				.MakeGenericMethod(resultType)
 				.Invoke(queryModelVisitor,new object[] { queryModel });
-			
+
 			var selectExp = queryModelVisitor.TryGetQuery(queryModel.MainFromClause);
 			selectExp.QuerySource = queryModel.MainFromClause;
 			return (selectExp, queryContext?.ParameterValues ?? new Dictionary<string,object>());
 		}
-		
+
 		public static string GetWhereSql(this DbContext dbContext,SelectExpression selExp)
 		{
 			if (dbContext == null)
@@ -114,11 +114,11 @@ namespace Dapper.Internal
 		public static DbTransaction GetDbTransaction(this DbContext dbCtx) =>
 			(dbCtx ?? throw new ArgumentNullException(nameof(dbCtx))).Database.CurrentTransaction?.GetDbTransaction();
 
-		public static int? GetCommandTimeout(this DbContext dbCtx) => 
+		public static int? GetCommandTimeout(this DbContext dbCtx) =>
 			(dbCtx ?? throw new ArgumentNullException(nameof(dbCtx))).Database.GetCommandTimeout();
 
-		public static (DbConnection, DbTransaction, int?) GetDatabaseConfig(this DbContext dbCtx) =>			
-			((dbCtx ?? throw new ArgumentNullException(nameof(dbCtx))).Database.GetDbConnection(), 
+		public static (DbConnection, DbTransaction, int?) GetDatabaseConfig(this DbContext dbCtx) =>
+			((dbCtx ?? throw new ArgumentNullException(nameof(dbCtx))).Database.GetDbConnection(),
 				dbCtx.Database.CurrentTransaction?.GetDbTransaction(),
 				dbCtx.Database.GetCommandTimeout());
 
@@ -132,5 +132,5 @@ namespace Dapper.Internal
 			var schema = annotations.Schema ?? "dbo";
 			return "["+schema+"].["+annotations.TableName+"]";
 		}
-	}	
+	}
 }

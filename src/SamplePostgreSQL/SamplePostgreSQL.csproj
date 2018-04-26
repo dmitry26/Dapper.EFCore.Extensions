@@ -6,6 +6,10 @@
     <RootNamespace>Sample</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Sample\Extensions\HostBuilderExts.cs" Link="Extensions\HostBuilderExts.cs" />
     <Compile Include="..\Sample\Models\Blog.cs" Link="Models\Blog.cs" />

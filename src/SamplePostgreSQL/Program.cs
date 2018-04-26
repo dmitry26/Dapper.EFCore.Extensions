@@ -48,7 +48,7 @@ namespace Sample
 
 
 		private static void ConfigApp()
-		{			
+		{
 			var appSettings = HostBuilderExts.GetAppSettings();
 
 			Log.Logger = new LoggerConfiguration()
@@ -194,7 +194,7 @@ namespace Sample
 					using (_operLogger.BeginScope("{OperId}",".Insert6 (with class)"))
 					{
 						LogStarted(operSW);
-						
+
 						var blog = new Blog
 						{
 							Name = "Blog1",
@@ -221,6 +221,37 @@ namespace Sample
 						};
 
 						var res = ctx.Users.Insert(obj);
+						LogElapsed(operSW,"ended",$"res = {res}");
+					}
+
+					LogNewLine();
+
+					using (_operLogger.BeginScope("{OperId}",".Insert8 (bulk)"))
+					{
+						LogStarted(operSW);
+
+						var dt = DateTime.Now;
+
+						var objs = new[]
+						{
+							new {
+								Name1 = "User Insert 123",
+								  DateCreate = dt,
+								  Gender = Gender.Female
+							},
+							  new {
+								Name1 = "User Insert 234",
+								  DateCreate = dt,
+								  Gender = Gender.Male
+							},
+							  new {
+								Name1 = "User Insert 345",
+								  DateCreate = dt,
+								  Gender = Gender.Female
+							},
+						};
+
+						var res = ctx.Insert<User>(objs,2);
 						LogElapsed(operSW,"ended",$"res = {res}");
 					}
 				}
@@ -256,7 +287,7 @@ namespace Sample
 
 						using (var ctx = new BloggingContext(_dbCtxOpts))
 						{
-							var u1 = new User
+							var u = new User
 							{
 								Name1 = "User Insert 123",
 								DateCreate = DateTime.Now,
@@ -264,7 +295,44 @@ namespace Sample
 								Id = 3
 							};
 
-							res = await  ctx.InsertAsync<User>(u1).ConfigureAwait(false);
+							res = await ctx.InsertAsync<User>(u).ConfigureAwait(false);
+						}
+
+						LogElapsed(sw,"ended",$"res = {res}");
+					}
+				}));
+
+				tasks.Add(Task.Run(async () =>
+				{
+					using (_operLogger.BeginScope("{OperId}",".Insert2"))
+					{
+						var sw = LogStarted();
+						int res;
+
+						using (var ctx = new BloggingContext(_dbCtxOpts))
+						{
+							var dt = DateTime.Now;
+
+							var objs = new[]
+							{
+								new {
+									Name1 = "User Insert 123",
+									  DateCreate = dt,
+									  Gender = Gender.Female
+								},
+								  new {
+									Name1 = "User Insert 234",
+									  DateCreate = dt,
+									  Gender = Gender.Male
+								},
+								  new {
+									Name1 = "User Insert 345",
+									  DateCreate = dt,
+									  Gender = Gender.Female
+								},
+							};
+
+							res = await ctx.InsertAsync<User>(objs,2).ConfigureAwait(false);
 						}
 
 						LogElapsed(sw,"ended",$"res = {res}");
@@ -310,7 +378,7 @@ namespace Sample
 					using (_operLogger.BeginScope("{OperId}",".Update2 (with anonymous)"))
 					{
 						LogStarted(operSW);
-						
+
 						var obj = new
 						{
 							Gender = Gender.Male,
@@ -325,7 +393,7 @@ namespace Sample
 
 					using (_operLogger.BeginScope("{OperId}",".Update3 (with query)"))
 					{
-						LogStarted(operSW);						
+						LogStarted(operSW);
 
 						var res = ctx.Update<User>(new
 						{
@@ -340,7 +408,7 @@ namespace Sample
 					using (_operLogger.BeginScope("{OperId}",".Update4 (with complex query)"))
 					{
 						LogStarted(operSW);
-						
+
 						var name = "teste";
 
 						var res = ctx.Update<User>(new
@@ -356,7 +424,7 @@ namespace Sample
 					using (_operLogger.BeginScope("{OperId}",".Update5 (with complex query)"))
 					{
 						LogStarted(operSW);
-						
+
 						var name = "teste";
 
 						var res = ctx.Update<User>(new
@@ -379,6 +447,39 @@ namespace Sample
 						{
 							Gender = Gender.Female
 						},o => o.Id == 1 && (o.Name1 == name || o.DateCreate > DateTime.Now));
+
+						LogElapsed(operSW,"ended",$"res = {res}");
+					}
+
+					LogNewLine();
+
+					using (_operLogger.BeginScope("{OperId}",".Update7 (bulk)"))
+					{
+						LogStarted(operSW);
+
+						var objs = new[]
+						{
+							new
+							{
+								Gender = Gender.Male,
+								  Id = 8,
+								  Name1 = "User Insert8"
+							},
+							  new
+							{
+								Gender = Gender.Female,
+								  Id = 9,
+								  Name1 = "User Insert9"
+							},
+							  new
+							{
+								Gender = Gender.Female,
+								  Id = 10,
+								  Name1 = "User Insert10"
+							}
+						};
+
+						var res = ctx.Update<User>(objs);
 
 						LogElapsed(operSW,"ended",$"res = {res}");
 					}
@@ -456,6 +557,44 @@ namespace Sample
 					}
 				}));
 
+				tasks.Add(Task.Run(async () =>
+				{
+					using (_operLogger.BeginScope("{OperId}",".Update3 (bulk)"))
+					{
+						var sw = LogStarted();
+						int res;
+
+						using (var ctx = new BloggingContext(_dbCtxOpts))
+						{
+							var objs = new[]
+							{
+								new
+								{
+									Gender = Gender.Male,
+									  Id = 8,
+									  Name1 = "User Insert83"
+								},
+								  new
+								{
+									Gender = Gender.Female,
+									  Id = 9,
+									  Name1 = "User Insert93"
+								},
+								  new
+								{
+									Gender = Gender.Female,
+									  Id = 10,
+									  Name1 = "User Insert103"
+								}
+							};
+
+							res = await ctx.UpdateAsync<User>(objs,2);
+						}
+
+						LogElapsed(sw,"ended",$"res = {res}");
+					}
+				}));
+
 				await Task.WhenAll(tasks).ConfigureAwait(false);
 				LogElapsed(batchSw,"ended");
 			}
@@ -476,7 +615,7 @@ namespace Sample
 					using (_operLogger.BeginScope("{OperId}",".Delete1 (all)"))
 					{
 						LogStarted(operSW);
-						
+
 						var res = ctx.DeleteAll<BlogPost>();
 
 						LogElapsed(operSW,"ended",$"res = {res}");
@@ -487,7 +626,7 @@ namespace Sample
 					using (_operLogger.BeginScope("{OperId}",".Delete2 (with query)"))
 					{
 						LogStarted(operSW);
-						
+
 						var id = 20;
 						var res = ctx.Delete<User>(o => o.Id >= id);
 
@@ -558,7 +697,7 @@ namespace Sample
 		public static void Select()
 		{
 			var q1 = EF.CompileQuery(
-				(BloggingContext ctx) => 
+				(BloggingContext ctx) =>
 					ctx.Users.Where(o => o.Id > 1 && o.Name1 == "User Insert2")
 					.OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2));
 
@@ -570,18 +709,18 @@ namespace Sample
 
 				using (var ctx = new BloggingContext(_dbCtxOpts))
 				{
-					ctx.SetDapperMapping<User>();					
+					ctx.SetDapperMapping<User>();
 					var operSW = new Stopwatch();
 
 					using (_operLogger.BeginScope("{OperId}",".Select1a (compiled)"))
 					{
 						LogStarted(operSW);
-						
+
 						var res = q1(ctx);
 
 						LogElapsed(operSW,"ended",$"count = {res.Count()}");
 					}
-					
+
 					LogNewLine();
 
 					using (_operLogger.BeginScope("{OperId}",".Select1"))
@@ -590,7 +729,7 @@ namespace Sample
 
 						var q = ctx.Users.Where(o => o.Id > 1 && o.Name1 == "User Insert2")
 							.OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2);
-						var res = ctx.Query(q);						
+						var res = ctx.Query(q);
 
 						LogElapsed(operSW,"ended",$"count = {res.Count()}");
 					}
@@ -611,7 +750,7 @@ namespace Sample
 					LogNewLine();
 
 					using (_operLogger.BeginScope("{OperId}",".Select3"))
-					{						
+					{
 						LogStarted(operSW);
 
 						var q = ctx.Blogs.Where(b => b.Name == "Blog2").Join(ctx.Users,o => o.UserId,i => i.Id,
@@ -636,17 +775,17 @@ namespace Sample
 						stateSw.Restart();
 
 						var q = from u in ctx.Users
-										 join b in ctx.Blogs on u.Id equals b.UserId into bg
-										 from b in bg.DefaultIfEmpty()
-										 join p in ctx.BlogPosts on b.Id equals p.BlogId into pg
-										 from p in pg.DefaultIfEmpty()
-										 where u.Id == 2
-										 select new
-										 {
-											 User = u,
-											 Blog = b,
-											 Post = p
-										 };
+								join b in ctx.Blogs on u.Id equals b.UserId into bg
+								from b in bg.DefaultIfEmpty()
+								join p in ctx.BlogPosts on b.Id equals p.BlogId into pg
+								from p in pg.DefaultIfEmpty()
+								where u.Id == 2
+								select new
+								{
+									User = u,
+									Blog = b,
+									Post = p
+								};
 
 						LogElapsed(stateSw,"created query");
 
@@ -684,7 +823,7 @@ namespace Sample
 
 						LogElapsed(stateSw,"processed result");
 						LogElapsed(operSW,"ended",$"count = {res.Count()}");
-					}					
+					}
 				}
 
 				LogElapsed(batchSW,"ended");
@@ -692,7 +831,7 @@ namespace Sample
 		}
 
 		public static void SelectSync()
-		{			
+		{
 			LogNewLine();
 
 			using (_operLogger.BeginScope("{BatchId}","SelectSync"))
@@ -736,7 +875,7 @@ namespace Sample
 					LogNewLine();
 
 					using (_operLogger.BeginScope("{OperId}",".Select12 (with selector)"))
-					{						
+					{
 						LogStarted(operSw);
 
 						var q = ctx.Users.Where(o => o.Id > 1).OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2).Select(x => new { x.Id,Name = x.Name1 });
@@ -760,18 +899,18 @@ namespace Sample
 					LogNewLine();
 
 					using (_operLogger.BeginScope("{OperId}",".Select14 (with selector)"))
-					{						
+					{
 						LogStarted(operSw);
 
 						var q = ctx.Users.Where(o => o.Id > 1).OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2).Select(x => new { x.Id,Name = x.Name1 });
 						var res = ctx.Query(q);
 
-						LogElapsed(operSw,"ended",$"count = {res.Count()}");						
+						LogElapsed(operSw,"ended",$"count = {res.Count()}");
 					}
 
 					operSw.Restart();
 				}
-				
+
 				LogElapsed(operSw,"disposed context");
 				LogElapsed(batchSw,"ended");
 			}
@@ -787,16 +926,16 @@ namespace Sample
 
 				var batchSw = LogStarted();
 				var operSw = Stopwatch.StartNew();
-				
+
 				using (var ctx = new BloggingContext(_dbCtxOpts))
 				{
 					ctx.SetDapperMapping<User>();
 				}
 
-				LogElapsed(operSw,"set mapping");				
+				LogElapsed(operSw,"set mapping");
 
 				tasks.Add(Task.Run(async () =>
-				{					
+				{
 					using (_operLogger.BeginScope("{OperId}",".Select1"))
 					{
 						var sw = LogStarted();
@@ -807,7 +946,7 @@ namespace Sample
 							var stateSw = Stopwatch.StartNew();
 							var q = ctx.Users.Where(o => o.Id > 1 && o.Name1 == "User Insert2").OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2);
 							LogElapsed(stateSw,"created query");
-							count = (await ctx.QueryAsync(q).ConfigureAwait(false)).Count();							
+							count = (await ctx.QueryAsync(q).ConfigureAwait(false)).Count();
 						}
 
 						LogElapsed(sw,"ended",$"count = {count}");
@@ -826,7 +965,7 @@ namespace Sample
 							var stateSw = Stopwatch.StartNew();
 							var q = ctx.Users.Where(o => o.Id > 1).OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2).Select(x => new { x.Id,Name = x.Name1 });
 							LogElapsed(stateSw,"created query");
-							count = (await ctx.QueryAsync(q).ConfigureAwait(false)).Count();							
+							count = (await ctx.QueryAsync(q).ConfigureAwait(false)).Count();
 						}
 
 						LogElapsed(sw,"ended",$"count = {count}");
@@ -845,7 +984,7 @@ namespace Sample
 							var stateSw = Stopwatch.StartNew();
 							var q = ctx.Users.Where(o => o.Id > 1 && o.Name1 == "User Insert2").OrderBy(x => x.Id).ThenByDescending(x => x.Name1).Take(2);
 							LogElapsed(stateSw,"created query");
-							count = (await ctx.QueryAsync(q).ConfigureAwait(false)).Count();							
+							count = (await ctx.QueryAsync(q).ConfigureAwait(false)).Count();
 						}
 
 						LogElapsed(sw,"ended",$"count = {count}");
@@ -877,7 +1016,7 @@ namespace Sample
 		}
 
 		#endregion
-		
+
 		private static Stopwatch LogStarted()
 		{
 			_operLogger.LogDebug("[started]");
@@ -915,9 +1054,9 @@ namespace Sample
 			WarmupEF();
 			InsertEF();
 			InsertEF();
-			UpdateEF();			
-		}		
-		
+			UpdateEF();
+		}
+
 		#region Tests EntityFramework
 
 		public static void WarmupEF()
@@ -930,7 +1069,7 @@ namespace Sample
 
 				using (var ctx = new BloggingContext(_dbCtxOpts))
 				{
-					ctx.Users.Load();					
+					ctx.Users.Load();
 				}
 
 				LogElapsed(batchSw,"ended");
@@ -944,7 +1083,7 @@ namespace Sample
 			using (_operLogger.BeginScope("{BatchId}","InsertEF"))
 			{
 				var batchSw = LogStarted();
-				
+
 				using (var ctx = new BloggingContext(_dbCtxOpts))
 				{
 					using (_operLogger.BeginScope("{OperId}",".Insert1"))
@@ -959,7 +1098,7 @@ namespace Sample
 				}
 
 				LogElapsed(batchSw,"ended");
-			}			
+			}
 		}
 
 		public static void UpdateEF()
