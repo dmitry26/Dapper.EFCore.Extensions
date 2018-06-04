@@ -39,13 +39,10 @@ namespace Sample
 		private static readonly LoggerFactory _efLoggerFactory
 			= new LoggerFactory(new[] { new SerilogLoggerProvider(Log.Logger,false) });
 
-		private static Stopwatch _watch = new Stopwatch();
-
 		private static DbContextOptions<BloggingContext> _dbCtxOpts;
 
 		private static Microsoft.Extensions.Logging.ILogger _operLogger;
 		private static Microsoft.Extensions.Logging.ILogger _genLogger;
-
 
 		private static void ConfigApp()
 		{

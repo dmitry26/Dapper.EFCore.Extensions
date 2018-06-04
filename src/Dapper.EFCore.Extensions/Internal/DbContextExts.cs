@@ -45,6 +45,7 @@ namespace Dapper.Internal
 					evaluatableExpressionFilter: evalExpFilter,
 					parameterValues: queryContext,
 					logger: dbContext.GetService<IDiagnosticsLogger<DbLoggerCategory.Query>>(),
+					context: dbContext,
 					parameterize: true).ExtractParameters(linqExp);
 			}
 
@@ -127,7 +128,7 @@ namespace Dapper.Internal
 			var annotations = (dbCtx ?? throw new ArgumentNullException(nameof(dbCtx)))
 				.Model.FindEntityType(type
 				?? throw new ArgumentNullException(nameof(type)))?.Relational()
-				??	throw new InvalidOperationException("Annotations not found");
+				??  throw new InvalidOperationException("Annotations not found");
 
 			var schema = annotations.Schema ?? "dbo";
 			return "["+schema+"].["+annotations.TableName+"]";

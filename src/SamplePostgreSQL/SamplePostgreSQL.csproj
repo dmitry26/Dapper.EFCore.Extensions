@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>Sample</RootNamespace>
   </PropertyGroup>
 
@@ -10,10 +10,13 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Sample\Extensions\HostBuilderExts.cs" Link="Extensions\HostBuilderExts.cs" />
     <Compile Include="..\Sample\Models\Blog.cs" Link="Models\Blog.cs" />
-    <Compile Include="..\Sample\Models\BloggingContext.cs" Link="Models\BloggingContext.cs" />
     <Compile Include="..\Sample\Models\BlogPost.cs" Link="Models\BlogPost.cs" />
     <Compile Include="..\Sample\Models\BlogSetting.cs" Link="Models\BlogSetting.cs" />
     <Compile Include="..\Sample\Models\CustomBloggingContext.cs" Link="Models\CustomBloggingContext.cs" />
@@ -22,12 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.2" />
+    <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Serilog.Filters.Expressions" Version="1.1.0" />
@@ -50,7 +53,6 @@
 
   <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>
